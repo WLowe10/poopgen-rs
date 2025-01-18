@@ -1,2 +1,4 @@
 mod parse;
-pub mod poopgen;
+mod poopgen;
+
+pub use poopgen::*;

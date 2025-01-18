@@ -46,8 +46,8 @@ pub fn parse_directory(path: &Path) -> TemplateDirectory {
                 .entries
                 .push(TemplateEntry::Directory(template_directory));
         } else {
-            let mut is_template = false;
             let content = fs::read_to_string(&entry_path).expect("failed to parse file content");
+            let mut is_template = false;
 
             // poopfile should not be included in entries.
             if entry_name == POOPFILE_NAME {
