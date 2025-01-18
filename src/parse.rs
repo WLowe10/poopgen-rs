@@ -1,5 +1,5 @@
 use std::{
-    fs,
+    fs, io,
     path::{Path, PathBuf},
 };
 
@@ -26,8 +26,8 @@ pub enum TemplateEntry {
     Directory(TemplateDirectory),
 }
 
-pub fn parse_directory(path: &Path) -> TemplateDirectory {
-    let entities = fs::read_dir(path).expect("failed to read directory");
+pub fn parse_directory(path: &Path) -> Result<TemplateDirectory, io::Error> {
+    let entities = fs::read_dir(path)?;
 
     let mut directory = TemplateDirectory {
         path: PathBuf::from(path.file_name().unwrap()),
@@ -40,13 +40,13 @@ pub fn parse_directory(path: &Path) -> TemplateDirectory {
         let mut entry_name = entry_path.file_name().unwrap().to_str().unwrap().to_owned();
 
         if entry_path.is_dir() {
-            let template_directory = parse_directory(&entry_path);
+            let template_directory = parse_directory(&entry_path)?;
 
             directory
                 .entries
                 .push(TemplateEntry::Directory(template_directory));
         } else {
-            let content = fs::read_to_string(&entry_path).expect("failed to parse file content");
+            let content = fs::read_to_string(&entry_path)?;
             let mut is_template = false;
 
             // poopfile should not be included in entries.
@@ -69,5 +69,5 @@ pub fn parse_directory(path: &Path) -> TemplateDirectory {
         }
     }
 
-    directory
+    Ok(directory)
 }
